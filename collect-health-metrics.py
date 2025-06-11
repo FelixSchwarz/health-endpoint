@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-collect-health-metrics.py [--detailed] --config=/path/to/config.toml
+collect-health-metrics.py [--detailed] --config=/path/to/config.toml [--output=/path/to/output.json]
 """
 
 import argparse
@@ -23,6 +23,7 @@ def collect_health_metrics_main():
     parser = argparse.ArgumentParser(description='Collect health metrics.')
     parser.add_argument('--detailed', action='store_true', help='Output detailed health JSON.')
     parser.add_argument('--config', required=True, help='Path to TOML config file.')
+    parser.add_argument('--output', help='Output file for health metrics JSON.')
     args = parser.parse_args()
 
     with open(args.config, 'rb') as toml_fp:
@@ -32,7 +33,14 @@ def collect_health_metrics_main():
     else:
         health_data = generate_basic_health_json(config)
 
-    print(json.dumps(health_data, indent=2))
+    output_path = args.output or None
+    json_data = json.dumps(health_data, indent=2)
+    if output_path:
+        with open(output_path, 'w') as output_fp:
+            output_fp.write(json_data)
+    else:
+        print(json_data)
+
     is_degraded = (health_data['status'] == 'degraded')
     sys.exit(1 if is_degraded else 0)
 
