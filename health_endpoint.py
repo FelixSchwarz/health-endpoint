@@ -92,7 +92,13 @@ def is_authorized() -> bool:
     config = current_app.extensions['health-endpoint']
     if not config.api_token:
         return False
-    token = request.headers.get('X-API-Token')
+
+    auth_header = request.headers.get('Authorization')
+    if auth_header and auth_header.startswith('Bearer '):
+        _, token = auth_header.split('Bearer ', maxsplit=1)
+    else:
+        # retrieve token from query string which is really convenient for manual testing
+        token = request.args.get('token')
     return token and (token == config.api_token)
 
 if __name__ == '__main__':
