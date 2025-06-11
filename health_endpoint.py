@@ -2,6 +2,7 @@
 import json
 import os
 import sys
+from datetime import datetime as DateTime, timezone
 from pathlib import Path
 from typing import NamedTuple
 
@@ -12,6 +13,7 @@ from flask import Flask, abort, current_app, request
 class ServerConfig(NamedTuple):
     path_health_json: Path
     api_token: str | None
+    max_data_age: int
 
 
 _flask = Flask('health-endpoint', static_folder=None, template_folder=None)
@@ -30,6 +32,7 @@ def init_app() -> Flask:
     server_config = ServerConfig(
         path_health_json  = Path(toml_config['health-data']),
         api_token         = toml_config.get('api-token'),
+        max_data_age      = toml_config.get('max-age', 600)
     )
     _flask.extensions['health-endpoint'] = server_config
     return _flask
@@ -67,6 +70,15 @@ def load_health_json(*, detailed: bool = False) -> dict:
     if not detailed:
         health_data.pop('components')
 
+    is_health_data_recent = False
+    generation_time = health_data.get('timestamp')
+    if generation_time:
+        generation_time = DateTime.fromisoformat(generation_time.rstrip('Z'))
+        now = DateTime.now(timezone.utc)
+        age = (now - generation_time).total_seconds()
+        is_health_data_recent = (age < (10 * 60))  # less than 10 minutes
+    if not is_health_data_recent:
+        return {'status': 'unknown', 'error': 'Health data is too old'}
     return health_data
 
 
