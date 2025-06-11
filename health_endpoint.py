@@ -105,3 +105,6 @@ if __name__ == '__main__':
     app = init_app()
     debug = ('--debug' in sys.argv)
     app.run(host='0.0.0.0', port=5005, debug=debug)
+else:
+    # gunicorn
+    wsgi_app = init_app()
