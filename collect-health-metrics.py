@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-collect-health-metrics.py [--detailed] --config /path/to/config.toml
+collect-health-metrics.py [--detailed] --config=/path/to/config.toml
 """
 
 import argparse
@@ -53,6 +53,9 @@ def is_systemd_unit_active(unit_name: str) -> bool:
 def generate_detailed_health_json(config: Mapping) -> dict:
     components = {}
     for check_name, check in config.items():
+        if not isinstance(check, dict):
+            # web-related config: api-token, health-data, ...
+            continue
         check_type = check['type']
         if check_type == 'number_files':
             directory = check['directory']
@@ -68,7 +71,7 @@ def generate_detailed_health_json(config: Mapping) -> dict:
     is_overall_healthy = ('degraded' not in {_c['status'] for _c in components.values()})
     return {
         'status': 'healthy' if is_overall_healthy else 'degraded',
-        'timestamp': DateTime.now(timezone.utc).isoformat() + 'Z',
+        'timestamp': DateTime.now(timezone.utc).isoformat(timespec='seconds') + 'Z',
         'components': components
     }
 
