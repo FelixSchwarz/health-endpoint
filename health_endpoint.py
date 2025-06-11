@@ -4,7 +4,7 @@ import os
 import sys
 from datetime import datetime as DateTime, timezone
 from pathlib import Path
-from typing import NamedTuple
+from typing import NamedTuple, Optional
 
 
 try:
@@ -16,7 +16,7 @@ from flask import Flask, abort, current_app, request
 
 class ServerConfig(NamedTuple):
     path_health_json: Path
-    api_token: str | None
+    api_token: Optional[str]
     max_data_age: int
 
 

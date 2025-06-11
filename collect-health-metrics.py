@@ -10,6 +10,7 @@ import subprocess
 import sys
 from collections.abc import Mapping
 from datetime import datetime as DateTime, timezone
+from typing import Optional
 
 
 try:
@@ -86,7 +87,7 @@ def generate_basic_health_json(config: Mapping) -> dict:
     return health_data
 
 
-def _count_files_in_directory(directory: str) -> int | None:
+def _count_files_in_directory(directory: str) -> Optional[int]:
     try:
         return len([f for f in os.listdir(directory)])
     except (OSError, PermissionError):
