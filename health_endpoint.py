@@ -41,6 +41,8 @@ def health():
     if not is_authorized():
         abort(401)
     health_data = load_health_json()
+    if health_data.get('status') != 'healthy':
+        return health_data, 503
     return health_data
 
 
@@ -49,6 +51,8 @@ def health_detailed():
     if not is_authorized():
         abort(401)
     health_data = load_health_json(detailed=True)
+    if health_data.get('status') != 'healthy':
+        return health_data, 503
     return health_data
 # `--- flask handlers ---------------------------------------------------------
 
