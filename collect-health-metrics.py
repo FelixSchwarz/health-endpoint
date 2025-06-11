@@ -11,7 +11,11 @@ import sys
 from collections.abc import Mapping
 from datetime import datetime as DateTime, timezone
 
-import tomllib
+
+try:
+    import tomllib
+except ImportError:
+    import tomli as tomllib
 
 
 def collect_health_metrics_main():

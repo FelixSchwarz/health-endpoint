@@ -6,7 +6,11 @@ from datetime import datetime as DateTime, timezone
 from pathlib import Path
 from typing import NamedTuple
 
-import tomllib
+
+try:
+    import tomllib
+except ImportError:
+    import tomli as tomllib
 from flask import Flask, abort, current_app, request
 
 
