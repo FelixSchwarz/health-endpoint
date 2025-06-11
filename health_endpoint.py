@@ -93,5 +93,5 @@ def is_authorized() -> bool:
 
 if __name__ == '__main__':
     app = init_app()
-    debug = sys.stdin.isatty()
+    debug = ('--debug' in sys.argv)
     app.run(host='0.0.0.0', port=5005, debug=debug)
